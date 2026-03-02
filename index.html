@@ -718,76 +718,81 @@ footer::before { content: '桜'; position: absolute; right: -20px; top: -20px; f
         <button class="btn-sm red" onclick="showScreen('s-landing')">Keluar</button>
       </div>
     </div>
-    <div class="admin-grid">
-      <div class="adm-card">
-        <div class="adm-card-t">Generate Token VIP Berikutnya</div>
-        <div style="text-align:center;padding:18px 0;">
-          <div class="next-tok" id="next-tok">001</div>
-          <div class="next-tok-l">Token selanjutnya</div>
-        </div>
-        <button class="btn-gold btn-full" onclick="generateToken()" style="margin-top:14px;">✦ Generate & Catat Token</button>
-        <div style="margin-top:10px;font-size:11px;color:var(--ink-muted);text-align:center;">Klik setelah konfirmasi pembayaran</div>
-      </div>
-      <div class="adm-card">
-        <div class="adm-card-t">Token yang Sudah Dibuat</div>
-        <div class="tok-list" id="tok-list"><div style="font-size:12px;color:var(--ink-muted);text-align:center;padding:20px;">Belum ada token</div></div>
-      </div>
-    </div>
 
-    <!-- DEBUG PANEL -->
-    <div class="adm-card" style="margin-bottom:18px;border-left:3px solid var(--gold);">
-      <div class="adm-card-t" style="display:flex;align-items:center;justify-content:space-between;">
-        <span>🔍 Debug — Cek Token di Storage</span>
-        <button class="btn-sm" onclick="debugTokens()" style="font-size:9px;padding:5px 12px;">Tampilkan Data Token</button>
-      </div>
-      <div class="debug-box" id="debug-output">Klik "Tampilkan Data Token" untuk melihat isi localStorage...</div>
-    </div>
-
+    <!-- STATISTIK TOKEN -->
     <div class="adm-card" style="margin-bottom:18px;">
-      <div class="adm-card-t">Daftar Member <span id="member-count" style="color:var(--sakura-dark);margin-left:8px;"></span></div>
+      <div class="adm-card-t">📊 Statistik Token</div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;">
+        <div style="flex:1;min-width:100px;background:rgba(106,152,112,.1);border:1px solid rgba(106,152,112,.3);border-radius:10px;padding:14px;text-align:center;">
+          <div id="stat-available" style="font-size:28px;font-weight:700;color:var(--matcha);">-</div>
+          <div style="font-size:10px;letter-spacing:2px;color:var(--ink-muted);margin-top:4px;">TERSEDIA</div>
+        </div>
+        <div style="flex:1;min-width:100px;background:rgba(184,146,42,.1);border:1px solid rgba(184,146,42,.3);border-radius:10px;padding:14px;text-align:center;">
+          <div id="stat-used" style="font-size:28px;font-weight:700;color:var(--gold);">-</div>
+          <div style="font-size:10px;letter-spacing:2px;color:var(--ink-muted);margin-top:4px;">TERPAKAI</div>
+        </div>
+        <div style="flex:1;min-width:100px;background:rgba(139,123,171,.1);border:1px solid rgba(139,123,171,.3);border-radius:10px;padding:14px;text-align:center;">
+          <div id="stat-blocked" style="font-size:28px;font-weight:700;color:var(--fuji);">-</div>
+          <div style="font-size:10px;letter-spacing:2px;color:var(--ink-muted);margin-top:4px;">DIBLOKIR</div>
+        </div>
+      </div>
+      <div style="margin-top:14px;padding:12px;background:var(--washi-2);border-radius:8px;font-size:12px;color:var(--ink-soft);">
+        💡 Token berikutnya yang tersedia: <strong id="next-tok" style="color:var(--sakura-dark);font-family:'Noto Serif JP',serif;font-size:16px;letter-spacing:4px;">-</strong>
+      </div>
+    </div>
+
+    <!-- DAFTAR SEMUA TOKEN -->
+    <div class="adm-card" style="margin-bottom:18px;">
+      <div class="adm-card-t" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>🎫 Semua Token (001–999)</span>
+        <div style="display:flex;gap:6px;">
+          <button class="btn-sm" onclick="filterTokens('all')" id="ftab-all" style="background:var(--sakura-dark);color:#fff;">Semua</button>
+          <button class="btn-sm" onclick="filterTokens('available')" id="ftab-available">Tersedia</button>
+          <button class="btn-sm" onclick="filterTokens('used')" id="ftab-used">Terpakai</button>
+          <button class="btn-sm" onclick="filterTokens('blocked')" id="ftab-blocked">Diblokir</button>
+        </div>
+      </div>
+      <div id="tok-list" style="margin-top:10px;max-height:380px;overflow-y:auto;"></div>
+    </div>
+
+    <!-- DAFTAR MEMBER -->
+    <div class="adm-card" style="margin-bottom:18px;">
+      <div class="adm-card-t">👥 Daftar Member <span id="member-count" style="color:var(--sakura-dark);margin-left:8px;"></span></div>
       <div style="overflow-x:auto;"><table class="mem-table"><thead><tr><th>Token</th><th>Username</th><th>Nama</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="mem-tbody"><tr><td colspan="5" style="text-align:center;color:var(--ink-muted);padding:18px;">Belum ada member</td></tr></tbody></table></div>
     </div>
 
+    <!-- TOKEN DIBLOKIR -->
     <div class="adm-card" style="margin-bottom:18px;border-left:3px solid rgba(139,123,171,.4);">
       <div class="adm-card-t" style="display:flex;align-items:center;justify-content:space-between;">
         <span>🔑 Token Diblokir <span id="blocked-tok-count" style="color:var(--fuji);margin-left:6px;"></span></span>
-        <span style="font-size:10px;color:var(--ink-muted);font-weight:400;letter-spacing:1px;">Token dapat diaktifkan ulang untuk member baru</span>
+        <span style="font-size:10px;color:var(--ink-muted);">Bisa diaktifkan ulang untuk member baru</span>
       </div>
       <div style="overflow-x:auto;">
         <table class="tok-blokir-table">
           <thead><tr><th>Token</th><th>Username Lama</th><th>Nama</th><th>Status</th><th>Diblokir Pada</th><th>Aksi</th></tr></thead>
-          <tbody id="blocked-tok-tbody">
-            <tr><td colspan="5" class="tok-blokir-empty">Belum ada token yang diblokir</td></tr>
-          </tbody>
+          <tbody id="blocked-tok-tbody"><tr><td colspan="6" class="tok-blokir-empty">✅ Tidak ada token yang diblokir</td></tr></tbody>
         </table>
-      </div>
-      <div style="margin-top:12px;padding:10px 12px;background:rgba(139,123,171,.06);border:1px solid rgba(139,123,171,.15);font-size:11px;color:var(--ink-muted);line-height:1.7;">
-        💡 <strong style="color:var(--fuji);">Aktifkan Ulang</strong> = Token dibebaskan dari akun lama → bisa didaftarkan ke username baru. Akun lama tetap terhapus.
       </div>
     </div>
 
+    <!-- NOMOR DANA & WA -->
     <div class="adm-card" style="margin-bottom:18px;">
       <div class="adm-card-t">Nomor DANA & WhatsApp</div>
       <div style="margin-bottom:10px;">
         <div style="font-size:10px;letter-spacing:2px;color:var(--ink-muted);margin-bottom:6px;">NOMOR DANA</div>
-        <div class="adm-form">
-          <input class="adm-inp" id="adm-dana" placeholder="Nomor DANA kamu (081234567890)">
-          <button class="btn-sm" onclick="saveDana()">Simpan</button>
-        </div>
+        <div class="adm-form"><input class="adm-inp" id="adm-dana" placeholder="081234567890"><button class="btn-sm" onclick="saveDana()">Simpan</button></div>
       </div>
       <div>
         <div style="font-size:10px;letter-spacing:2px;color:var(--ink-muted);margin-bottom:6px;">NOMOR WHATSAPP</div>
-        <div class="adm-form">
-          <input class="adm-inp" id="adm-wa" placeholder="Nomor WA aktif (628123456789 tanpa +)">
-          <button class="btn-sm" onclick="saveWA()">Simpan</button>
-        </div>
+        <div class="adm-form"><input class="adm-inp" id="adm-wa" placeholder="628123456789 (tanpa +)"><button class="btn-sm" onclick="saveWA()">Simpan</button></div>
       </div>
-      <div class="adm-note">Nomor ini ditampilkan di halaman pembayaran untuk calon member VIP.</div>
     </div>
+
+    <!-- RESET -->
     <div class="adm-card">
       <div class="adm-card-t">Zona Berbahaya</div>
       <button class="btn-sm red" onclick="resetData()">Reset Semua Data</button>
-      <div style="margin-top:9px;font-size:11px;color:var(--ink-muted);">Hapus semua token dan akun member.</div>
+      <div style="margin-top:9px;font-size:11px;color:var(--ink-muted);">Hapus semua akun member (token tetap ada 001-999).</div>
     </div>
   </div>
 </div>
@@ -1159,29 +1164,36 @@ function doAdminLogin(){
   hideModal('modal-admin'); showScreen('s-admin'); refreshAdmin();
 }
 
+let _allTokensCache = [];
+let _currentFilter = 'all';
+
 async function refreshAdmin(){
-  const db=await dbRead();
+  const db = await dbRead();
   const tokens=db.tokens||{}, users=db.users||{};
   const blocked=db.blocked||{}, blockedToks=db.blockedTokens||{};
 
-  // Statistik token
-  const allToks=Object.keys(tokens);
-  const available=allToks.filter(t=>!tokens[t].used&&!tokens[t].locked);
-  const used=allToks.filter(t=>tokens[t].used);
-  const locked=allToks.filter(t=>tokens[t].locked);
-  const nextEl=document.getElementById('next-tok');
-  if(nextEl) nextEl.textContent=available.length?available[0]:'Habis';
+  // Statistik
+  const allToks = Object.keys(tokens);
+  const available = allToks.filter(t=>!tokens[t].used&&!tokens[t].locked);
+  const used      = allToks.filter(t=>tokens[t].used);
+  const lockedT   = allToks.filter(t=>tokens[t].locked);
 
-  // Token list — hanya tampilkan yg terpakai/terkunci
-  const tl=document.getElementById('tok-list');
-  const usedOrLocked=allToks.filter(t=>tokens[t].used||tokens[t].locked);
-  tl.innerHTML=`<div style="font-size:12px;color:var(--ink-muted);padding:10px 0 6px;letter-spacing:1px;">
-    ○ Tersedia: <strong>${available.length}</strong> &nbsp;|&nbsp; ✓ Terpakai: <strong>${used.length}</strong> &nbsp;|&nbsp; 🔑 Diblokir: <strong>${locked.length}</strong>
-  </div>`+(usedOrLocked.length?usedOrLocked.map(t=>{
-    const isLocked=tokens[t].locked===true||!!blockedToks[t];
-    const statusTxt=isLocked?`<span style="font-size:9px;color:var(--fuji);">🔑 DIBLOKIR</span>`:`<span class="ti-s yes">✓ Terpakai</span>`;
-    return `<div class="tok-item" style="${isLocked?'opacity:.5;':''}"><span class="ti-t" style="${isLocked?'color:var(--fuji);':''}">${t}</span><span class="ti-u">${tokens[t].username||'-'}</span>${statusTxt}</div>`;
-  }).join(''):'<div style="font-size:12px;color:var(--ink-muted);text-align:center;padding:18px;">Belum ada token terpakai</div>');
+  document.getElementById('stat-available').textContent = available.length;
+  document.getElementById('stat-used').textContent      = used.length;
+  document.getElementById('stat-blocked').textContent   = lockedT.length;
+  const nextEl = document.getElementById('next-tok');
+  if(nextEl) nextEl.textContent = available.length ? available[0] : 'Habis';
+
+  // Simpan cache untuk filter
+  _allTokensCache = allToks.map(t=>({
+    tok: t,
+    used: tokens[t].used,
+    locked: tokens[t].locked||!!blockedToks[t],
+    username: tokens[t].username||null,
+    name: tokens[t].username ? (users[tokens[t].username]?.name||'-') : null
+  }));
+
+  renderTokenList(_currentFilter);
 
   // Member table
   const uk=Object.keys(users), tb=document.getElementById('mem-tbody'), mc=document.getElementById('member-count');
@@ -1210,8 +1222,44 @@ async function refreshAdmin(){
   const wel=document.getElementById('wa-num-display'); if(wa&&wel) wel.textContent='0'+wa.replace(/^62/,'');
 }
 
-// generateToken tidak dibutuhkan lagi — token 001-999 sudah ada semua
-function generateToken(){ showToast('Token 001-999 sudah tersedia semua!'); }
+function renderTokenList(filter){
+  _currentFilter = filter;
+  // Update tab styles
+  ['all','available','used','blocked'].forEach(f=>{
+    const el=document.getElementById('ftab-'+f);
+    if(el){ el.style.background=f===filter?'var(--sakura-dark)':''; el.style.color=f===filter?'#fff':''; }
+  });
+
+  let list = _allTokensCache;
+  if(filter==='available') list=list.filter(t=>!t.used&&!t.locked);
+  else if(filter==='used')  list=list.filter(t=>t.used&&!t.locked);
+  else if(filter==='blocked') list=list.filter(t=>t.locked);
+
+  const tl=document.getElementById('tok-list');
+  if(!list.length){ tl.innerHTML='<div style="font-size:12px;color:var(--ink-muted);text-align:center;padding:24px;">Tidak ada token di kategori ini</div>'; return; }
+
+  tl.innerHTML=list.map(t=>{
+    let statusBadge, rowStyle='';
+    if(t.locked){
+      statusBadge=`<span style="font-size:10px;color:var(--fuji);background:rgba(139,123,171,.12);padding:3px 8px;border-radius:20px;">🔑 Diblokir</span>`;
+      rowStyle='opacity:.6;';
+    } else if(t.used){
+      statusBadge=`<span style="font-size:10px;color:var(--gold);background:rgba(184,146,42,.12);padding:3px 8px;border-radius:20px;">✓ Terpakai</span>`;
+    } else {
+      statusBadge=`<span style="font-size:10px;color:var(--matcha);background:rgba(106,152,112,.12);padding:3px 8px;border-radius:20px;">○ Tersedia</span>`;
+    }
+    const userInfo = t.used && t.username
+      ? `<span style="font-size:11px;color:var(--ink-soft);">👤 ${t.username}</span> <span style="font-size:11px;color:var(--ink-muted);">· ${t.name||'-'}</span>`
+      : `<span style="font-size:11px;color:var(--ink-muted);">Belum dipakai</span>`;
+    return `<div class="tok-item" style="${rowStyle}display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border);">
+      <span style="font-family:'Noto Serif JP',serif;font-size:18px;letter-spacing:4px;color:${t.locked?'var(--fuji)':t.used?'var(--gold)':'var(--sakura-dark)'};min-width:44px;">${t.tok}</span>
+      <div style="flex:1;">${userInfo}</div>
+      ${statusBadge}
+    </div>`;
+  }).join('');
+}
+
+function filterTokens(f){ renderTokenList(f); }
 
 async function saveDana(){
   const v=document.getElementById('adm-dana').value.trim();
